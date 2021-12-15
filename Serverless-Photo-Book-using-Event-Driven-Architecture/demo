@@ -1,0 +1,31 @@
+Lab tutorial here: https://amazon.qwiklabs.com/
+** Note: You'll need to search for "Building Serverless Applications with an Event-Driven Architecture on the catalog tab.
+
+In this project, I built a web-based book printing app using a set of serverless technologies. I learned:
+
+1. Event-driven architecture
+2. How Step Functions is configured to orchestrate serverless applications
+3. How to take advantage of Amazon SQS and SNS
+4. Create and configure Lambda functions and API Gateway resources
+5. Made configuration updates to restore API functionality
+
+Key services used in this project:
+1. Amazon API Gateway 
+2. AWS Lambda - to run code, serverless. 
+3. AWS Step Functions - allows coordination of multiple AWS services into serverless workflows, allowing you to build and update apps quickly.
+4. Amazon S3 - object storage service
+5. Amazon Simple Queue Service/SQS
+6. Amazon Simple Notification Service/SNS
+7. Amazon Rekognition
+
+APIs used in this project:
+1. /presigned - user sends request for presigned URLs to upload their images to an S3 bucket.
+2. /CreateBookBinding - user triggers book creation process by indicating that they have finished uploading their images. This triggers the image-processing state machine.
+3. /execution - the user approves the PDF by acknowledging an email from Amazon SNS
+
+Step Functions and state machines:
+1. ImageProcessStateMachine : the job of this state machine is to pick up user-uploaded images from the S3 /Incoming folder, process the images, and create a PDF album for book printing. Key steps in this flow includes: image validation, resizing, watermarking. 
+2. BookprintStateMachine : this state machine reads messages from the print vendor Amazon SQS and sends the photo book to a third-party vendor for printing. 
+
+
+
