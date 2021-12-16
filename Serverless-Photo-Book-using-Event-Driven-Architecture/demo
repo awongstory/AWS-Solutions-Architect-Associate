@@ -27,5 +27,8 @@ Step Functions and state machines:
 1. ImageProcessStateMachine : the job of this state machine is to pick up user-uploaded images from the S3 /Incoming folder, process the images, and create a PDF album for book printing. Key steps in this flow includes: image validation, resizing, watermarking. 
 2. BookprintStateMachine : this state machine reads messages from the print vendor Amazon SQS and sends the photo book to a third-party vendor for printing. 
 
+Generating pre-signed URLs:
+https://github.com/jamesb3ll/s3-presigned-url-lambda 
+Requires: nvm and npm for node.js
 
 
