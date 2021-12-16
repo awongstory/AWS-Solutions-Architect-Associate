@@ -1,7 +1,7 @@
 Lab tutorial here: https://amazon.qwiklabs.com/
 ** Note: You'll need to search for "Building Serverless Applications with an Event-Driven Architecture on the catalog tab.
 
-In this project, I built a web-based book printing app using a set of serverless technologies. I learned:
+In this project, I am building a web-based book printing app using a set of serverless technologies. My goals are to learn:
 
 1. Event-driven architecture
 2. How Step Functions is configured to orchestrate serverless applications
