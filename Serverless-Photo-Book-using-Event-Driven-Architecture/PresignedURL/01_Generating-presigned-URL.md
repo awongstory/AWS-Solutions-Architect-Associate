@@ -13,7 +13,7 @@ In this project, I am building a web-based book printing app using a set of serv
 
 The diagram of what I'm trying to accomplish looks like this:
  
-![Workflow](PresignedURL/images/001-LambdaFlow.jpg)
+![Workflow](images/001-LambdaFlow.jpg)
 
 ## Key services used in this project:
 1. Amazon API Gateway 
@@ -46,35 +46,35 @@ There are different ways to execute this, including using boto or serverless. Ho
 - You need a key pair to access your EC2 instance. EC2 > Key Pairs > Create Key Pair
 - Select pem if using SSH vs ppk if using Windows PuTTy. Download the pem/ppk for use later (you'll need the file path). For Windows 10 and newer, you can now use SSH in Powershell.
 
-![Create key pair](PresignedURL/images/002-EC2KeyPair.jpg)
+![Create key pair](images/002-EC2KeyPair.jpg)
 
 2. Create an EC2 instance
 - On the left menu, go to Instances > Launch instances. 
 - You'll choose an AMI or Amazon Machine Image. An Amazon Linux 2 AMI (Free tier) is absolutely fine here. You'll also choose your instance type, where the t2.micro is sufficient. 
 
-![Create EC2 Instance](PresignedURL/images/006a-CreateEC2Instance.JPEG)
+![Create EC2 Instance](images/006a-CreateEC2Instance.JPEG)
 
 - Hit Next: Configure instance. Here, you leave just about everything default.
 
-![Create EC2 Instance](PresignedURL/images/006b-CreateEC2Instance.jpg)
+![Create EC2 Instance](images/006b-CreateEC2Instance.jpg)
 
 - Hit Next: Add storage. Leave everything default again.
 - Hit Next: Add tags. Here, you can add a tag to identify your instance such as "name: EC2-photobook". 
 - Hit Next: Configure Security Group. Leave everything default, and launch your instance.
 
-![Configure Instance Security Group](PresignedURL/images/006c-CreateEC2securitygroup.jpg)
+![Configure Instance Security Group](images/006c-CreateEC2securitygroup.jpg)
 
 It should take a few seconds for your instance status to change to running. Then, take note your instance publicIP, it'll come in play later when we use SSH over Powershell.
  
-![Copy paste EC2 PublicIP](PresignedURL/images/007-EC2config.JPEG)
+![Copy paste EC2 PublicIP](images/007-EC2config.JPEG)
 
 3. Create S3 bucket
 
 We also need to create our S3 bucket. I named mine `photobook-upload`. In configuring your bucket, turn OFF block all public access, and hit the checkmark where you acknowledge that this setting might result in the bucket becoming public. Hit Create bucket. 
 
-![Create S3 bucket](PresignedURL/images/003-S3CreateBucket.jpg)
+![Create S3 bucket](images/003-S3CreateBucket.jpg)
 
-![Make bucket public](PresignedURL/images/004-MakeBucketPublic.jpg)
+![Make bucket public](images/004-MakeBucketPublic.jpg)
 
 When your bucket is created, go to Permissions > Cross-origin resource sharing (CORS). CORS defines a way for client applications from one domain to interact with resources on another domain. The new console only accepts JSON now. The CORS configuration is 
 
@@ -105,13 +105,13 @@ The Lambda function will generate the presigned URL to upload the object.
 - Select **Author from scratch**, and specify function name (e.g., PresignedUrlFunction).
 - Select Node.js 12.x as the Runtime. 
 
-![Create Lambda function](PresignedURL/images/008-CreateLambda.JPEG)
+![Create Lambda function](images/008-CreateLambda.JPEG)
 
 - Expand Choose or create an execution role > Create new role with basic Lambda permissions.
   This will create a role in IAM with basic lambda execution permissions (you'll edit this later). 
 - Click Create Function. 
 
-![Replace Lambda code](PresignedURL/images/011-LambdaCode.JPEG)
+![Replace Lambda code](images/011-LambdaCode.JPEG)
 
 - Once function is created, go to Code, and replace function's code with:
 
@@ -136,11 +136,11 @@ exports.handler = (event, context, callback) => {
 - Replace **`BUCKET NAME`** with your bucket name. 
 - Go to Configuration > Permissions > Execution role > Role name. 
 
-![Edit Lambda role](PresignedURL/images/012-LambdaRole.JPEG)
+![Edit Lambda role](images/012-LambdaRole.JPEG)
 
   - IAM role should open in new browser tab. Create an inline policy under Add permissions. 
 
-![Add inline policy on IAM](PresignedURL/images/013-LambdaIAMinlinepolicy.JPEG)
+![Add inline policy on IAM](images/013-LambdaIAMinlinepolicy.JPEG)
 
   - You can do this either by using the visual editor or the JSON editor. Either way, replace the policy with the following, and replace **`BUCKET NAME`** with your S3 bucket name.
 
@@ -163,15 +163,15 @@ exports.handler = (event, context, callback) => {
 - Click Test, add your Event name (e.g, PresignedUrlTest) and leave everything else as default. Click Create.
 - Click on Test once more, and expand Details.
 
-![Test PUT access](PresignedURL/images/015-LambdaCodeTest.JPEG)
+![Test PUT access](images/015-LambdaCodeTest.JPEG)
 
 - Copy the generated URL (with the double quotes).
 
-![Copy generated URL](PresignedURL/images/016-LambdaTestResult.JPEG)
+![Copy generated URL](images/016-LambdaTestResult.JPEG)
 
 - Copy the path of your .pem file and EC2 publicIP. On Windows 10 and newer, open Powershell and connect via SSH.
 
-![SSH Powershell](PresignedURL/images/018-SSHPowershell.JPEG)
+![SSH Powershell](images/018-SSHPowershell.JPEG)
 
 ```
 ssh -i C:\\pem PATH ec2-user@PUBLICIP
@@ -187,7 +187,7 @@ curl -s PUT --data "This is my file content" --url "PRESIGNED URL RESULT"
 - Check your S3 bucket; the new object is uploaded there. You can query it by selecting object > Actions > Query with S3 select > Run SQL Query.
 - Your object should show your file content.
 
-![Verify upload](PresignedURL/images/019-S3VerifyUpload.JPEG)
+![Verify upload](images/019-S3VerifyUpload.JPEG)
 
 ### And that's it on setting up presigned URLs on AWS! ###
 
