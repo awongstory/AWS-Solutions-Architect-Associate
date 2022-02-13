@@ -13,9 +13,7 @@ In this project, I am building a web-based book printing app using a set of serv
 
 The diagram of what I'm trying to accomplish looks like this:
  
-![alt_text][image]
-
-[image]: https://github.com/awongstory/AWS-Solutions-Architect-Associate/blob/main/Serverless-Photo-Book-using-Event-Driven-Architecture/PresignedURL/images/001-LambdaFlow.jpg "Workflow"
+![Workflow](PresignedURL/images/001-LambdaFlow.jpg)
 
 ## Key services used in this project:
 1. Amazon API Gateway 
@@ -46,51 +44,37 @@ There are different ways to execute this, including using boto or serverless. Ho
 
 1. Create key pair
 - You need a key pair to access your EC2 instance. EC2 > Key Pairs > Create Key Pair
-- Select pem if using SSH vs ppk if using Windows PuTTy. For Windows 10 and newer, you can now use SSH in Powershell.
+- Select pem if using SSH vs ppk if using Windows PuTTy. Download the pem/ppk for use later (you'll need the file path). For Windows 10 and newer, you can now use SSH in Powershell.
 
-![alt-text][image]
-
-[image]: https://github.com/awongstory/AWS-Solutions-Architect-Associate/blob/main/Serverless-Photo-Book-using-Event-Driven-Architecture/PresignedURL/images/002-EC2KeyPair.jpg "Create key pair"
+![Create key pair](PresignedURL/images/002-EC2KeyPair.jpg)
 
 2. Create an EC2 instance
 - On the left menu, go to Instances > Launch instances. 
 - You'll choose an AMI or Amazon Machine Image. An Amazon Linux 2 AMI (Free tier) is absolutely fine here. You'll also choose your instance type, where the t2.micro is sufficient. 
 
-![alt text][logo]
-
-[logo]: https://github.com/awongstory/AWS-Solutions-Architect-Associate/blob/main/Serverless-Photo-Book-using-Event-Driven-Architecture/PresignedURL/images/006a-CreateEC2Instance.JPEG "Create E2 Instance"
+![Create EC2 Instance](PresignedURL/images/006a-CreateEC2Instance.JPEG)
 
 - Hit Next: Configure instance. Here, you leave just about everything default.
- 
-![alt text][logo]
 
-[logo]: https://github.com/awongstory/AWS-Solutions-Architect-Associate/blob/main/Serverless-Photo-Book-using-Event-Driven-Architecture/PresignedURL/images/006b-CreateEC2Instance.jpg "Create E2 Instance"
+![Create EC2 Instance](PresignedURL/images/006b-CreateEC2Instance.jpg)
 
 - Hit Next: Add storage. Leave everything default again.
 - Hit Next: Add tags. Here, you can add a tag to identify your instance such as "name: EC2-photobook". 
 - Hit Next: Configure Security Group. Leave everything default, and launch your instance.
 
-![alt text][logo]
+![Configure Instance Security Group](PresignedURL/images/006c-CreateEC2securitygroup.jpg)
 
-[logo]: https://github.com/awongstory/AWS-Solutions-Architect-Associate/blob/main/Serverless-Photo-Book-using-Event-Driven-Architecture/PresignedURL/images/006c-CreateEC2securitygroup.jpg "Configure Instance Security Group"
-
-It should take a few seconds for your instance status to change to running. Then, copy and paste your instance publicIP.
+It should take a few seconds for your instance status to change to running. Then, take note your instance publicIP, it'll come in play later when we use SSH over Powershell.
  
-![alt text][logo]
-
-[logo]: https://github.com/awongstory/AWS-Solutions-Architect-Associate/blob/main/Serverless-Photo-Book-using-Event-Driven-Architecture/PresignedURL/images/007-EC2config.JPEG "Copy Paste EC2 Public IP"
+![Copy paste EC2 PublicIP](PresignedURL/images/007-EC2config.JPEG)
 
 3. Create S3 bucket
 
-We also need to create our S3 bucket. I named mine photobook-upload. In configuring your bucket, turn OFF block all public access, and hit the checkmark where you acknowledge that this setting might result in the bucket becoming public. Hit Create bucket. 
+We also need to create our S3 bucket. I named mine `photobook-upload`. In configuring your bucket, turn OFF block all public access, and hit the checkmark where you acknowledge that this setting might result in the bucket becoming public. Hit Create bucket. 
 
-![alt_text][image]
+![Create S3 bucket](PresignedURL/images/003-S3CreateBucket.jpg)
 
-[image]: https://github.com/awongstory/AWS-Solutions-Architect-Associate/blob/main/Serverless-Photo-Book-using-Event-Driven-Architecture/PresignedURL/images/003-S3CreateBucket.jpg "Create S3 bucket"
-
-![alt text][logo]
-
-[logo]: https://github.com/awongstory/AWS-Solutions-Architect-Associate/blob/main/Serverless-Photo-Book-using-Event-Driven-Architecture/PresignedURL/images/004-MakeBucketPublic.jpg "Make Bucket Public"
+![Make bucket public](PresignedURL/images/004-MakeBucketPublic.jpg)
 
 When your bucket is created, go to Permissions > Cross-origin resource sharing (CORS). CORS defines a way for client applications from one domain to interact with resources on another domain. The new console only accepts JSON now. The CORS configuration is 
 
@@ -121,18 +105,13 @@ The Lambda function will generate the presigned URL to upload the object.
 - Select **Author from scratch**, and specify function name (e.g., PresignedUrlFunction).
 - Select Node.js 12.x as the Runtime. 
 
-![alt text][logo]
-
-[logo]: https://github.com/awongstory/AWS-Solutions-Architect-Associate/blob/main/Serverless-Photo-Book-using-Event-Driven-Architecture/PresignedURL/images/008-CreateLambda.JPEG "Create Lambda function"
+![Create Lambda function](PresignedURL/images/008-CreateLambda.JPEG)
 
 - Expand Choose or create an execution role > Create new role with basic Lambda permissions.
   This will create a role in IAM with basic lambda execution permissions (you'll edit this later). 
 - Click Create Function. 
 
-![alt text][logo]
-
-[logo]: https://github.com/awongstory/AWS-Solutions-Architect-Associate/blob/main/Serverless-Photo-Book-using-Event-Driven-Architecture/PresignedURL/images/011-LamdbdaCode.JPEG
-"Replace Lambda Code"
+![Replace Lambda code](PresignedURL/images/011-LambdaCode.JPEG)
 
 - Once function is created, go to Code, and replace function's code with:
 
@@ -154,21 +133,16 @@ exports.handler = (event, context, callback) => {
 }
 ```
 
-- Replace `BUCKET NAME` with your bucket name. 
+- Replace **`BUCKET NAME`** with your bucket name. 
 - Go to Configuration > Permissions > Execution role > Role name. 
 
-![alt text][logo]
-
-[logo]: https://github.com/awongstory/AWS-Solutions-Architect-Associate/blob/main/Serverless-Photo-Book-using-Event-Driven-Architecture/PresignedURL/images/012-LambdaRole.JPEG
-"Edit Lambda Role"
+![Edit Lambda role](PresignedURL/images/012-LambdaRole.JPEG)
 
   - IAM role should open in new browser tab. Create an inline policy under Add permissions. 
 
-![alt text][logo]
+![Add inline policy on IAM](PresignedURL/images/013-LambdaIAMinlinepolicy.JPEG)
 
-[logo]: https://github.com/awongstory/AWS-Solutions-Architect-Associate/blob/main/Serverless-Photo-Book-using-Event-Driven-Architecture/PresignedURL/images/013-LambdaIAMinlinepolicy.JPEG "Add Inline Policy on IAM"
-
-  - You can do this either by using the visual editor or the JSON editor. Either way, replace the policy with the following, and replace BUCKET NAME with your S3 bucket name.
+  - You can do this either by using the visual editor or the JSON editor. Either way, replace the policy with the following, and replace **`BUCKET NAME`** with your S3 bucket name.
 
 ```
 {
@@ -189,28 +163,22 @@ exports.handler = (event, context, callback) => {
 - Click Test, add your Event name (e.g, PresignedUrlTest) and leave everything else as default. Click Create.
 - Click on Test once more, and expand Details.
 
-![alt text][logo]
-
-[logo]: https://github.com/awongstory/AWS-Solutions-Architect-Associate/blob/main/Serverless-Photo-Book-using-Event-Driven-Architecture/PresignedURL/images/015-LambdaCodeTest.JPEG "Test PUT access"
+![Test PUT access](PresignedURL/images/015-LambdaCodeTest.JPEG)
 
 - Copy the generated URL (with the double quotes).
 
-![alt text][logo]
-
-[logo]: https://github.com/awongstory/AWS-Solutions-Architect-Associate/blob/main/Serverless-Photo-Book-using-Event-Driven-Architecture/PresignedURL/images/016-LambdaTestResult.JPEG "Copy generated URL"
+![Copy generated URL](PresignedURL/images/016-LambdaTestResult.JPEG)
 
 - Copy the path of your .pem file and EC2 publicIP. On Windows 10 and newer, open Powershell and connect via SSH.
 
-![alt text][logo]
-
-[logo]: https://github.com/awongstory/AWS-Solutions-Architect-Associate/blob/main/Serverless-Photo-Book-using-Event-Driven-Architecture/PresignedURL/images/018-SSHPowershell.JPEG "Copy generated URL"
+![SSH Powershell](PresignedURL/images/018-SSHPowershell.JPEG)
 
 ```
-ssh -i C:\\pemPATH ec2-user@PUBLICIP
+ssh -i C:\\pem PATH ec2-user@PUBLICIP
 ```
 
-- Type yes to continue connecting, and your publicIP will be added to the list of known hosts.
-- Then type the following with double quotes around your presigned URL. 
+- Type yes to continue connecting, and your publicIP will be added to the list of known hosts. 
+- Then type the following **with** double quotes around your presigned URL. 
 
 ```
 curl -s PUT --data "This is my file content" --url "PRESIGNED URL RESULT"
@@ -219,9 +187,7 @@ curl -s PUT --data "This is my file content" --url "PRESIGNED URL RESULT"
 - Check your S3 bucket; the new object is uploaded there. You can query it by selecting object > Actions > Query with S3 select > Run SQL Query.
 - Your object should show your file content.
 
-![alt text][logo]
-
-[logo]: https://github.com/awongstory/AWS-Solutions-Architect-Associate/blob/main/Serverless-Photo-Book-using-Event-Driven-Architecture/PresignedURL/images/019-S3VerifyUpload.JPEG "Copy generated URL"
+![Verify upload](PresignedURL/images/019-S3VerifyUpload.JPEG)
 
 ### And that's it on setting up presigned URLs on AWS! ###
 
