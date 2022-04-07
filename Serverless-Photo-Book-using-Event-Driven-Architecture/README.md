@@ -14,7 +14,7 @@ In this project, I am building a web-based book printing app using a set of serv
 
 The diagram of what I'm trying to accomplish looks like this:
  
-![Workflow](images/serverlessphotobook.jpg)
+![Workflow](assets/photobook.jpg)
 
 ## Key services used in this project:
 1. Amazon API Gateway 
