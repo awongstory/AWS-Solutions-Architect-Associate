@@ -1,3 +1,6 @@
+# only if you're running this on your computer
+# this is not the Lambda function
+
 from PIL import Image
 import glob
 
